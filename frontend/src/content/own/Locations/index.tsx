@@ -58,7 +58,7 @@ import Map from '../components/Map';
 import { formatSelect, formatSelectMultiple } from '../../../utils/formatters';
 import { CustomSnackBarContext } from 'src/contexts/CustomSnackBarContext';
 import { CompanySettingsContext } from '../../../contexts/CompanySettingsContext';
-import { DataGridProProps, useGridApiRef } from '@mui/x-data-grid-pro';
+import { DataGridProps, useGridApiRef } from '@mui/x-data-grid';
 import { GroupingCellWithLazyLoading } from '../Assets/GroupingCellWithLazyLoading';
 import { AssetRow } from '../../../models/owns/asset';
 import useAuth from '../../../hooks/useAuth';
@@ -394,21 +394,21 @@ function Locations() {
     },
     ...(apiKey
       ? ([
-          {
-            name: 'mapSwitch',
-            type: 'checkbox',
-            label: t('put_location_in_map'),
-            relatedFields: [
-              { field: 'mapTitle', value: false, hide: true },
-              { field: 'coordinates', value: false, hide: true }
-            ]
-          },
-          {
-            name: 'mapTitle',
-            type: 'titleGroupField',
-            label: t('map_coordinates')
-          }
-        ] as IField[])
+        {
+          name: 'mapSwitch',
+          type: 'checkbox',
+          label: t('put_location_in_map'),
+          relatedFields: [
+            { field: 'mapTitle', value: false, hide: true },
+            { field: 'coordinates', value: false, hide: true }
+          ]
+        },
+        {
+          name: 'mapTitle',
+          type: 'titleGroupField',
+          label: t('map_coordinates')
+        }
+      ] as IField[])
       : []),
     {
       name: 'image',
@@ -468,7 +468,7 @@ function Locations() {
             validation={Yup.object().shape(shape)}
             submitText={t('add')}
             values={{}}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               let formattedValues = formatValues(values);
               return new Promise<void>((resolve, rej) => {
@@ -510,32 +510,8 @@ function Locations() {
       </DialogContent>
     </Dialog>
   );
-  const groupingColDef: DataGridProProps['groupingColDef'] = {
-    headerName: t('hierarchy'),
-    renderCell: (params) => <GroupingCellWithLazyLoading {...params} />,
-    flex: 0.5
-  };
-  const CustomRow = (props: React.ComponentProps<typeof GridRow>) => {
-    const rowNode = apiRef.current.getRowNode(props.rowId);
-    const theme = useTheme();
 
-    return (
-      <GridRow
-        {...props}
-        style={
-          (rowNode?.depth ?? 0) > 0
-            ? {
-                backgroundColor:
-                  rowNode.depth % 2 === 0
-                    ? theme.colors.primary.light
-                    : theme.colors.primary.main,
-                color: 'white'
-              }
-            : undefined
-        }
-      />
-    );
-  };
+
   const renderMenu = () => (
     <Menu
       id="basic-menu"
@@ -630,18 +606,18 @@ function Locations() {
               }),
               coordinates: currentLocation?.longitude
                 ? {
-                    lng: currentLocation.longitude,
-                    lat: currentLocation.latitude
-                  }
+                  lng: currentLocation.longitude,
+                  lat: currentLocation.latitude
+                }
                 : null,
               parentLocation: currentLocation?.parentLocation
                 ? {
-                    label: currentLocation.parentLocation.name,
-                    value: currentLocation.parentLocation.id
-                  }
+                  label: currentLocation.parentLocation.name,
+                  value: currentLocation.parentLocation.id
+                }
                 : null
             }}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               let formattedValues = formatValues(values);
               //differentiate files from api and formattedValues
@@ -742,18 +718,11 @@ function Locations() {
             >
               <Box sx={{ width: '95%' }}>
                 <CustomDataGrid
-                  pro
-                  treeData
                   columns={columns}
-                  rows={locationsHierarchy}
+                  rows={locations}
                   loading={loadingGet}
                   apiRef={apiRef}
-                  getTreeDataPath={(row) =>
-                    row.hierarchy.map((id) => id.toString())
-                  }
-                  groupingColDef={groupingColDef}
                   components={{
-                    Row: CustomRow,
                     NoRowsOverlay: () => (
                       <NoRowsMessageWrapper
                         message={t('noRows.location.message')}
@@ -761,13 +730,6 @@ function Locations() {
                       />
                     )
                   }}
-                  onRowClick={(params) => handleOpenDetails(Number(params.id))}
-                  initialState={{
-                    columns: {
-                      columnVisibilityModel: {}
-                    }
-                  }}
-                  sortingMode="client"
                   onSortModelChange={(model, details) => {
                     const mapper: Record<string, string> = {
                       name: 'name',

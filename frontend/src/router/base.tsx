@@ -4,11 +4,11 @@ import { Navigate } from 'react-router-dom';
 import SuspenseLoader from 'src/components/SuspenseLoader';
 
 const Loader = (Component) => (props) =>
-  (
-    <Suspense fallback={<SuspenseLoader />}>
-      <Component {...props} />
-    </Suspense>
-  );
+(
+  <Suspense fallback={<SuspenseLoader />}>
+    <Component {...props} />
+  </Suspense>
+);
 
 // Pages
 
@@ -41,7 +41,7 @@ const Landing = Loader(lazy(() => import('../content/landing')));
 const baseRoutes = [
   {
     path: '/',
-    element: <Overview />
+    element: <Navigate to="/account/login" replace />
   },
   {
     path: 'free-cmms',

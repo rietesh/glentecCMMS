@@ -49,7 +49,7 @@ import { onSearchQueryChange } from '../../../utils/overall';
 import SearchInput from '../components/SearchInput';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { useGridApiRef } from '@mui/x-data-grid-pro';
+import { useGridApiRef } from '@mui/x-data-grid';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import InviteUserDialog from './components/InviteUserDialog';
 import { isEmailVerificationEnabled } from '../../../config';

@@ -21,7 +21,7 @@ import {
   GridRow,
   GridSelectionModel
 } from '@mui/x-data-grid';
-import { DataGridProProps, useGridApiRef } from '@mui/x-data-grid-pro';
+import { DataGridProps, useGridApiRef } from '@mui/x-data-grid';
 import { AssetMiniDTO } from '../../../../models/owns/asset';
 import { GroupingCellWithLazyLoading } from '../../Assets/GroupingCellWithLazyLoading';
 import ReplayTwoToneIcon from '@mui/icons-material/ReplayTwoTone';
@@ -128,7 +128,7 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
       open &&
       (!initialized.current ||
         JSON.stringify(previousInitialSelectedAssets) !==
-          JSON.stringify(initialSelectedAssets))
+        JSON.stringify(initialSelectedAssets))
     ) {
       initialized.current = true;
       handleReset(true);
@@ -165,30 +165,9 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
     }
   ];
 
-  const groupingColDef: DataGridProProps['groupingColDef'] = {
-    headerName: t('hierarchy'),
-    renderCell: (params) => <GroupingCellWithLazyLoading {...params} />
-  };
 
-  const CustomRow = (props: React.ComponentProps<typeof GridRow>) => {
-    const rowNode = apiRef.current.getRowNode(props.rowId);
-    return (
-      <GridRow
-        {...props}
-        style={
-          (rowNode?.depth ?? 0) > 0
-            ? {
-                backgroundColor:
-                  rowNode.depth % 2 === 0
-                    ? theme.colors.primary.light
-                    : theme.colors.primary.main,
-                color: 'white'
-              }
-            : undefined
-        }
-      />
-    );
-  };
+
+
 
   const handleRowClick: GridEventListener<'rowClick'> = (params) => {
     // Prevent selection of loading rows or excluded assets
@@ -215,9 +194,9 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
     setSelectionModel(currentSelectionModel);
 
     // Update the selected assets array
-    const updatedSelectedAssets = currentSelectionModel.map((id) => {
-      return apiRef.current.getRow(id) as IRow;
-    });
+    const updatedSelectedAssets = currentSelectionModel
+      .map((id) => assetsMini.find(a => a.id === id))
+      .filter(Boolean) as AssetMiniDTO[];
     setSelectedAssets(updatedSelectedAssets);
     if (single) {
       onSelect(updatedSelectedAssets);
@@ -240,7 +219,7 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
     setSelectedAssets(updatedSelectedAssets);
   };
 
-  const filteredAssetsHierarchy = assetsHierarchy.filter(
+  const filteredAssets = assetsMini.filter(
     (asset) =>
       !excludedAssetIds.includes(asset.id) &&
       (locationId ? asset.locationId === locationId : true)
@@ -283,16 +262,12 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
       <DialogContent dividers sx={{ p: 1, height: '60vh' }}>
         <Box sx={{ height: '100%', width: '100%' }}>
           <CustomDataGrid
-            pro
-            treeData
             apiRef={apiRef}
             columns={columns}
-            rows={filteredAssetsHierarchy}
+            rows={filteredAssets}
             loading={loadingGet}
             getRowId={(row) => row.id}
             getRowHeight={() => 'auto'}
-            getTreeDataPath={(row) => row.hierarchy.map(String)}
-            groupingColDef={groupingColDef}
             disableColumnFilter
             checkboxSelection={!single}
             selectionModel={selectionModel}
@@ -302,14 +277,13 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
                 return;
               }
               setSelectionModel(newSelectionModel);
-              const updatedSelectedAssets = newSelectionModel.map((id) => {
-                return apiRef.current.getRow(id) as IRow;
-              });
+              const updatedSelectedAssets = newSelectionModel
+                .map((id) => assetsMini.find(a => a.id === id))
+                .filter(Boolean) as AssetMiniDTO[];
 
               setSelectedAssets(updatedSelectedAssets);
             }}
             components={{
-              Row: CustomRow,
               NoRowsOverlay: () => (
                 <NoRowsMessageWrapper
                   message={t('noRows.asset.message')}

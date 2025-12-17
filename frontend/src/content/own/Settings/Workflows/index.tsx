@@ -60,9 +60,10 @@ import { VendorMiniDTO } from '../../../../models/owns/vendor';
 import { TeamMiniDTO } from '../../../../models/owns/team';
 import Category from '../../../../models/owns/category';
 import DateTimePicker from '@mui/lab/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers-pro';
-import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { useBrand } from '../../../../hooks/useBrand';
 
@@ -217,9 +218,9 @@ function Workflows() {
         : 'purchaseOrderCategory',
       items:
         categories[
-          currentMainCondition.startsWith('WORK_ORDER')
-            ? 'work-order-categories'
-            : 'purchase-order-categories'
+        currentMainCondition.startsWith('WORK_ORDER')
+          ? 'work-order-categories'
+          : 'purchase-order-categories'
         ] ?? [],
       onOpen: () =>
         fetchCategories(
@@ -343,15 +344,15 @@ function Workflows() {
       type: 'select',
       accessor:
         currentMainCondition.startsWith('WORK_ORDER') ||
-        currentMainCondition.startsWith('REQUEST')
+          currentMainCondition.startsWith('REQUEST')
           ? 'workOrderCategory'
           : 'purchaseOrderCategory',
       items:
         categories[
-          currentMainCondition.startsWith('WORK_ORDER') ||
+        currentMainCondition.startsWith('WORK_ORDER') ||
           currentMainCondition.startsWith('REQUEST')
-            ? 'work-order-categories'
-            : 'purchase-order-categories'
+          ? 'work-order-categories'
+          : 'purchase-order-categories'
         ] ?? [],
       onOpen: () =>
         fetchCategories(
@@ -787,27 +788,38 @@ function Workflows() {
                 )}
               />
             ) : config.type === 'dateRange' ? (
-              <LocalizationProvider
-                localeText={{ start: t('start'), end: t('end') }}
-                dateAdapter={AdapterDayjs}
-              >
-                <DateRangePicker
-                  value={
-                    condition.values?.length > 1
-                      ? [condition.values[0], condition.values[1]]
-                      : [null, null]
-                  }
-                  onChange={(newValues) => {
-                    handleConditionValuesChange(newValues as string[], index);
-                  }}
-                  renderInput={(startProps, endProps) => (
-                    <>
-                      <TextField {...startProps} />
-                      <Box sx={{ mx: 2 }}> {t('to')} </Box>
-                      <TextField {...endProps} />
-                    </>
-                  )}
-                />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <DatePicker
+                    label={t('start')}
+                    value={
+                      condition.values?.[0] ? dayjs(condition.values[0]) : null
+                    }
+                    onChange={(newValue: Dayjs | null) => {
+                      const currentValues = condition.values ?? [null, null];
+                      handleConditionValuesChange(
+                        [newValue?.toISOString() ?? null, currentValues[1]],
+                        index
+                      );
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <DatePicker
+                    label={t('end')}
+                    value={
+                      condition.values?.[1] ? dayjs(condition.values[1]) : null
+                    }
+                    onChange={(newValue: Dayjs | null) => {
+                      const currentValues = condition.values ?? [null, null];
+                      handleConditionValuesChange(
+                        [currentValues[0], newValue?.toISOString() ?? null],
+                        index
+                      );
+                    }}
+                    minDate={condition.values?.[0] ? dayjs(condition.values[0]) : undefined}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Box>
               </LocalizationProvider>
             ) : null}
           </Box>
@@ -855,27 +867,34 @@ function Workflows() {
               )}
             />
           ) : config.type === 'dateRange' ? (
-            <LocalizationProvider
-              localeText={{ start: t('start'), end: t('end') }}
-              dateAdapter={AdapterDayjs}
-            >
-              <DateRangePicker
-                value={
-                  action.values?.length > 1
-                    ? [action.values[0], action.values[1]]
-                    : [null, null]
-                }
-                onChange={(newValues) => {
-                  handleActionValuesChange(newValues as string[]);
-                }}
-                renderInput={(startProps, endProps) => (
-                  <>
-                    <TextField {...startProps} />
-                    <Box sx={{ mx: 2 }}> {t('to')} </Box>
-                    <TextField {...endProps} />
-                  </>
-                )}
-              />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <DatePicker
+                  label={t('start')}
+                  value={action.values?.[0] ? dayjs(action.values[0]) : null}
+                  onChange={(newValue: Dayjs | null) => {
+                    const currentValues = action.values ?? [null, null];
+                    handleActionValuesChange([
+                      newValue?.toISOString() ?? null,
+                      currentValues[1]
+                    ]);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+                <DatePicker
+                  label={t('end')}
+                  value={action.values?.[1] ? dayjs(action.values[1]) : null}
+                  onChange={(newValue: Dayjs | null) => {
+                    const currentValues = action.values ?? [null, null];
+                    handleActionValuesChange([
+                      currentValues[0],
+                      newValue?.toISOString() ?? null
+                    ]);
+                  }}
+                  minDate={action.values?.[0] ? dayjs(action.values[0]) : undefined}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Box>
             </LocalizationProvider>
           ) : null}
         </Box>

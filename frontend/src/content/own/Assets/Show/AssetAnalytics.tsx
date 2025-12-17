@@ -46,9 +46,10 @@ import { CompanySettingsContext } from '../../../../contexts/CompanySettingsCont
 import AssetDowntime from '../../../../models/owns/assetDowntime';
 import { getAssetDetailsOverview } from '../../../../slices/analytics/asset';
 import DateTimePicker from '@mui/lab/DateTimePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import dayjs, { Dayjs } from 'dayjs';
 import { Filter } from '../../Analytics/WorkOrder/WOModal';
 import Loading from '../../Analytics/Loading';
 
@@ -73,27 +74,27 @@ const AssetDowntimes = ({ id }: PropsType) => {
     label: string;
     value: string;
   }[] = [
-    {
-      label: t('MTBF'),
-      value: assetDetailsOverview.mtbf.toString()
-    },
-    {
-      label: t('MTTR'),
-      value: assetDetailsOverview.mttr.toString()
-    },
-    {
-      label: t('downtime_hours'),
-      value: (assetDetailsOverview.downtime / 3600).toFixed(2)
-    },
-    {
-      label: t('uptime_hours'),
-      value: (assetDetailsOverview.uptime / 3600).toFixed(2)
-    },
-    {
-      label: t('total_cost'),
-      value: getFormattedCurrency(assetDetailsOverview.totalCost.toString())
-    }
-  ];
+      {
+        label: t('MTBF'),
+        value: assetDetailsOverview.mtbf.toString()
+      },
+      {
+        label: t('MTTR'),
+        value: assetDetailsOverview.mttr.toString()
+      },
+      {
+        label: t('downtime_hours'),
+        value: (assetDetailsOverview.downtime / 3600).toFixed(2)
+      },
+      {
+        label: t('uptime_hours'),
+        value: (assetDetailsOverview.uptime / 3600).toFixed(2)
+      },
+      {
+        label: t('total_cost'),
+        value: getFormattedCurrency(assetDetailsOverview.totalCost.toString())
+      }
+    ];
   return (
     <Box sx={{ px: 4 }}>
       <Grid container spacing={2}>
@@ -101,29 +102,36 @@ const AssetDowntimes = ({ id }: PropsType) => {
           <Card sx={{ p: 2 }}>
             <Box sx={{ height: 550, width: '95%' }}>
               <Stack direction="row" justifyContent="space-between" py={3}>
-                <LocalizationProvider
-                  localeText={{ start: t('start'), end: t('end') }}
-                  dateAdapter={AdapterDayjs}
-                >
-                  <DateRangePicker
-                    value={[start, end]}
-                    onChange={(newValue) => {
-                      setStart(newValue[0]);
-                      setEnd(newValue[1]);
-                    }}
-                    renderInput={(startProps, endProps) => (
-                      <>
-                        <TextField {...startProps} />
-                        <Box sx={{ mx: 2 }}> {t('to')} </Box>
-                        <TextField {...endProps} />
-                      </>
-                    )}
-                  />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <DatePicker
+                      label={t('start')}
+                      value={dayjs(start)}
+                      onChange={(newValue: Dayjs | null) => {
+                        if (newValue) {
+                          setStart(newValue.toDate());
+                        }
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                    <Box sx={{ mx: 1 }}> {t('to')} </Box>
+                    <DatePicker
+                      label={t('end')}
+                      value={dayjs(end)}
+                      onChange={(newValue: Dayjs | null) => {
+                        if (newValue) {
+                          setEnd(newValue.toDate());
+                        }
+                      }}
+                      minDate={dayjs(start)}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </Box>
                 </LocalizationProvider>
                 <Button disabled={loading.assetDetailsOverview}
-                        onClick={() => dispatch(getAssetDetailsOverview(id, start, end))}
-                        startIcon={loading.assetDetailsOverview && <CircularProgress size="1rem" />}
-                        variant={'contained'} color={'primary'}>{t('show')}</Button>
+                  onClick={() => dispatch(getAssetDetailsOverview(id, start, end))}
+                  startIcon={loading.assetDetailsOverview && <CircularProgress size="1rem" />}
+                  variant={'contained'} color={'primary'}>{t('show')}</Button>
               </Stack>
               <Divider sx={{ mb: 2 }} />
               <Card>

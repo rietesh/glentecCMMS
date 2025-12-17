@@ -52,7 +52,7 @@ import {
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { DataGridProProps, useGridApiRef } from '@mui/x-data-grid-pro';
+import { DataGridProps, useGridApiRef } from '@mui/x-data-grid';
 import { formatAssetValues } from '../../../utils/formatters';
 import { GroupingCellWithLazyLoading } from './GroupingCellWithLazyLoading';
 import { UserMiniDTO } from '../../../models/user';
@@ -693,12 +693,12 @@ function Assets() {
               warrantyExpirationDate: null,
               location: locationParamObject
                 ? {
-                    label: locationParamObject.name,
-                    value: locationParamObject.id
-                  }
+                  label: locationParamObject.name,
+                  value: locationParamObject.id
+                }
                 : null
             }}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               if (assetsHierarchy.length === 0)
                 fireGa4Event('first_asset_creation');
@@ -741,31 +741,8 @@ function Assets() {
     </Dialog>
   );
 
-  const groupingColDef: DataGridProProps['groupingColDef'] = {
-    headerName: t('hierarchy'),
-    renderCell: (params) => <GroupingCellWithLazyLoading {...params} />
-  };
-  const CustomRow = (props: React.ComponentProps<typeof GridRow>) => {
-    const rowNode = apiRef.current.getRowNode(props.rowId);
-    const theme = useTheme();
 
-    return (
-      <GridRow
-        {...props}
-        style={
-          (rowNode?.depth ?? 0) > 0
-            ? {
-                backgroundColor:
-                  rowNode.depth % 2 === 0
-                    ? theme.colors.primary.light
-                    : theme.colors.primary.main,
-                color: 'white'
-              }
-            : undefined
-        }
-      />
-    );
-  };
+
   if (hasViewPermission(PermissionEntity.ASSETS))
     return (
       <>
@@ -817,26 +794,14 @@ function Assets() {
           >
             <Box sx={{ width: '95%' }}>
               <CustomDataGrid
-                pro
-                treeData={view === 'hierarchy'}
                 columns={columns}
-                rows={view === 'hierarchy' ? assetsHierarchy : assets.content}
+                rows={assets.content}
                 apiRef={apiRef}
                 getRowHeight={() => 'auto'}
-                getTreeDataPath={(row) =>
-                  view === 'hierarchy'
-                    ? row.hierarchy.map((id) => id.toString())
-                    : [row.id.toString()]
-                }
                 disableColumnFilter
                 loading={loadingGet}
-                groupingColDef={
-                  view === 'hierarchy' ? groupingColDef : undefined
-                }
-                paginationMode={view === 'hierarchy' ? undefined : 'server'}
-                sortingMode={view === 'hierarchy' ? 'client' : undefined}
+                paginationMode="server"
                 onSortModelChange={(model) => {
-                  if (view !== 'hierarchy') return;
 
                   if (model.length === 0) {
                     setCriteria({
@@ -862,9 +827,8 @@ function Assets() {
                 }}
                 onPageSizeChange={onPageSizeChange}
                 onPageChange={onPageChange}
-                rowsPerPageOptions={view === 'list' ? [10, 20, 50] : undefined}
+                rowsPerPageOptions={[10, 20, 50]}
                 components={{
-                  Row: CustomRow,
                   NoRowsOverlay: () => (
                     <NoRowsMessageWrapper
                       message={t('noRows.asset.message')}
