@@ -9,4 +9,5 @@ atlas-cmms-frontend  | ./runtime-env.js does not exist. Creating one...
 atlas-cmms-frontend  | Error creating ./runtime-env.js: Error: Error getting 'GOOGLE_TRACKING_ID' from process.env
 atlas-cmms-frontend  |     at /usr/local/lib/node_modules/runtime-env-cra/lib/index.js:45:13
 
-
+atlas_db             | 2026-01-07 21:27:25.759 UTC [61] ERROR:  relation "public.databasechangeloglock" does not exist at character 22
+atlas_db             | 2026-01-07 21:27:25.759 UTC [61] STATEMENT:  SELECT COUNT(*) FROM public.databasechangeloglock
