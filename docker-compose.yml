@@ -15,6 +15,9 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+      x-bake:
+        provenance: false
+        sbom: false
     container_name: atlas-cmms-backend
     depends_on:
       - postgres
@@ -63,6 +66,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      x-bake:
+        provenance: false
+        sbom: false
     container_name: atlas-cmms-frontend
     environment:
       API_URL: ${PUBLIC_API_URL}
