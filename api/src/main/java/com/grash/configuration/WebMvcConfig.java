@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -23,9 +22,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] allowedOrigins = frontendUrl != null && !frontendUrl.isEmpty()
+                ? frontendUrl.split(",")
+                : new String[] { "*" };
+
         registry.addMapping("/**")
-                .allowedOrigins(frontendUrl)
+                .allowedOrigins(allowedOrigins)
                 .allowedMethods("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .exposedHeaders("Authorization")
                 .maxAge(MAX_AGE_SECS);
     }
 
