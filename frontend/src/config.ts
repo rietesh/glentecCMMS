@@ -4,7 +4,8 @@ const getRuntimeValue = (
 ): string | undefined => {
   const envValue = process.env[`REACT_APP_${key}`];
   const runtimeValue = window.__RUNTIME_CONFIG__?.[key]?.trim();
-  return envValue || runtimeValue || defaultValue;
+  // Prioritize runtime config over build-time env for dynamic configuration
+  return runtimeValue || envValue || defaultValue;
 };
 
 export const firebaseConfig = {
