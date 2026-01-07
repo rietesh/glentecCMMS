@@ -798,7 +798,7 @@ function Workflows() {
                     onChange={(newValue: Dayjs | null) => {
                       const currentValues = condition.values ?? [null, null];
                       handleConditionValuesChange(
-                        [newValue?.toISOString() ?? null, currentValues[1]],
+                        [newValue?.toISOString() ?? null, currentValues[1] as string],
                         index
                       );
                     }}
@@ -812,7 +812,7 @@ function Workflows() {
                     onChange={(newValue: Dayjs | null) => {
                       const currentValues = condition.values ?? [null, null];
                       handleConditionValuesChange(
-                        [currentValues[0], newValue?.toISOString() ?? null],
+                        [currentValues[0] as string, newValue?.toISOString() ?? null],
                         index
                       );
                     }}
@@ -876,7 +876,7 @@ function Workflows() {
                     const currentValues = action.values ?? [null, null];
                     handleActionValuesChange([
                       newValue?.toISOString() ?? null,
-                      currentValues[1]
+                      currentValues[1] as string
                     ]);
                   }}
                   renderInput={(params) => <TextField {...params} />}
@@ -887,7 +887,7 @@ function Workflows() {
                   onChange={(newValue: Dayjs | null) => {
                     const currentValues = action.values ?? [null, null];
                     handleActionValuesChange([
-                      currentValues[0],
+                      currentValues[0] as string,
                       newValue?.toISOString() ?? null
                     ]);
                   }}

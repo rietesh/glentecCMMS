@@ -196,17 +196,21 @@ function Files() {
       description: t('actions'),
       getActions: (params: GridRowParams<File>) => {
         let actions = [
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="rename"
             icon={<EditTwoToneIcon fontSize="small" color="primary" />}
             onClick={() => handleRename(Number(params.id))}
             label={t('rename')}
+            showInMenu
           />,
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="delete"
             icon={<DeleteTwoToneIcon fontSize="small" color="error" />}
             onClick={() => handleOpenDelete(Number(params.id))}
-            label={t('to_delete')}
+            label={t('delete')}
+            showInMenu
           />
         ];
         if (!hasEditPermission(PermissionEntity.FILES, params.row)) {
@@ -255,7 +259,7 @@ function Files() {
             validation={Yup.object().shape(shape)}
             submitText={t('add')}
             values={{}}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               return dispatch(addFiles(values.files)).then(() =>
                 setOpenAddModal(false)
@@ -294,7 +298,7 @@ function Files() {
             validation={Yup.object().shape(updateShape)}
             submitText={t('save')}
             values={{ ...currentFile }}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               return dispatch(
                 editFile(currentFile.id, { ...currentFile, name: values.name })

@@ -149,12 +149,12 @@ const People = ({ openModal, handleCloseModal }: PropsType) => {
     ...(isEmailVerificationEnabled
       ? []
       : [
-          {
-            name: 'password',
-            type: 'text',
-            label: t('password_leave_empty_if_you_dont_want_to_change')
-          } as IField
-        ])
+        {
+          name: 'password',
+          type: 'text',
+          label: t('password_leave_empty_if_you_dont_want_to_change')
+        } as IField
+      ])
   ];
   const getFields = () => {
     let fields = [...defautfields];
@@ -201,16 +201,16 @@ const People = ({ openModal, handleCloseModal }: PropsType) => {
               rate: currentUser?.rate,
               role: currentUser
                 ? {
-                    label:
-                      currentUser.role.code === 'USER_CREATED'
-                        ? currentUser.role.name
-                        : t(`${currentUser.role.code}_name`),
-                    value: currentUser.role.id
-                  }
+                  label:
+                    currentUser.role.code === 'USER_CREATED'
+                      ? currentUser.role.name
+                      : t(`${currentUser.role.code}_name`),
+                  value: currentUser.role.id
+                }
                 : null,
               password: null
             }}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               return dispatch(
                 editUser(currentUser.id, {
@@ -332,21 +332,25 @@ const People = ({ openModal, handleCloseModal }: PropsType) => {
       description: t('actions'),
       getActions: (params: GridRowParams<OwnUser>) => {
         let actions = [
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoToneIcon fontSize="small" color={'primary'} />}
             onClick={() => handleOpenUpdate(Number(params.id))}
             label={t('edit')}
+            showInMenu
           />,
           ...(params.row.enabled && !params.row.ownsCompany
             ? [
-                <GridActionsCellItem
-                  key="disable"
-                  icon={<CancelIcon fontSize="small" color={'error'} />}
-                  onClick={() => handleOpenDisable(Number(params.id))}
-                  label={t('disable')}
-                />
-              ]
+              // @ts-expect-error MUI v5 type definition issue
+              <GridActionsCellItem
+                key="disable"
+                icon={<CancelIcon fontSize="small" color={'error'} />}
+                onClick={() => handleOpenDisable(Number(params.id))}
+                label={t('disable')}
+                showInMenu
+              />
+            ]
             : [])
         ];
         if (!hasEditPermission(PermissionEntity.PEOPLE_AND_TEAMS, params.row))

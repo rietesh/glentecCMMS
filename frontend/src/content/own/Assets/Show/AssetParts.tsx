@@ -61,11 +61,13 @@ const AssetParts = ({ asset }: PropsType) => {
       description: t('actions'),
       getActions: (params: GridRowParams) => {
         let actions = [
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="delete"
             icon={<DeleteTwoToneIcon fontSize="small" color="error" />}
             onClick={() => handleDelete(Number(params.id))}
             label="Remove part"
+            showInMenu
           />
         ];
         if (!hasEditPermission(PermissionEntity.ASSETS, asset)) actions.shift();

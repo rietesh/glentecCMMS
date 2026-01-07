@@ -127,17 +127,21 @@ const AssetDowntimes = ({ asset }: PropsType) => {
       description: t('actions'),
       getActions: (params: GridRowParams) => {
         let actions = [
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoToneIcon fontSize="small" color="primary" />}
             onClick={() => handleEdit(Number(params.id))}
             label={t('edit_downtime')}
+            showInMenu
           />,
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="delete"
             icon={<DeleteTwoToneIcon fontSize="small" color="error" />}
             onClick={() => handleDelete(Number(params.id))}
             label={t('remove_downtime')}
+            showInMenu
           />
         ];
         if (!hasEditPermission(PermissionEntity.ASSETS, asset)) actions = [];
@@ -197,7 +201,7 @@ const AssetDowntimes = ({ asset }: PropsType) => {
             validation={Yup.object().shape(shape)}
             submitText={t('add')}
             values={{}}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               if (verifyValues(values))
                 return dispatch(
@@ -250,7 +254,7 @@ const AssetDowntimes = ({ asset }: PropsType) => {
                 ? getHoursAndMinutesAndSeconds(currentDowntime.duration)[1]
                 : 0
             }}
-            onChange={({ field, e }) => {}}
+            onChange={({ field, e }) => { }}
             onSubmit={async (values) => {
               if (verifyValues(values))
                 return dispatch(

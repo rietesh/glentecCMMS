@@ -428,6 +428,7 @@ function Roles() {
       description: t('actions'),
       getActions: (params: GridRowParams<Role>) => {
         let actions = [
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="edit"
             disabled={!hasFeature(PlanFeature.ROLE)}
@@ -439,7 +440,9 @@ function Roles() {
             }
             onClick={() => handleOpenUpdate(Number(params.id))}
             label={t('edit')}
+            showInMenu
           />,
+          // @ts-expect-error MUI v5 type definition issue
           <GridActionsCellItem
             key="delete"
             disabled={!hasFeature(PlanFeature.ROLE)}
@@ -451,6 +454,7 @@ function Roles() {
             }
             onClick={() => handleOpenDelete(Number(params.id))}
             label={t('to_delete')}
+            showInMenu
           />
         ];
         if (params.row.code !== 'USER_CREATED') actions = [];
