@@ -1,29 +1,16 @@
-atlas-cmms-backend   | 2026-01-07 20:45:24.147  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
-atlas-cmms-backend   |   Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
-atlas-cmms-backend   |   NOT STARTED.
-atlas-cmms-backend   |   Currently in standby mode.
-atlas-cmms-backend   |   Number of jobs executed: 0
-atlas-cmms-backend   |   Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
-atlas-cmms-backend   |   Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
-atlas-cmms-backend   | 
-atlas-cmms-backend   | 2026-01-07 20:45:24.147  INFO 1 --- [           main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
-atlas-cmms-backend   | 2026-01-07 20:45:24.147  INFO 1 --- [           main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
-atlas-cmms-backend   | 2026-01-07 20:45:24.147  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@f4a21cb
-atlas-cmms-backend   | 2026-01-07 20:45:24.265  INFO 1 --- [           main] o.s.aop.framework.CglibAopProxy          : Unable to proxy interface-implementing method [public final void org.springframework.scheduling.quartz.QuartzJobBean.execute(org.quartz.JobExecutionContext) throws org.quartz.JobExecutionException] because it is marked as final: Consider using interface-based JDK proxies instead!
-atlas-cmms-backend   | 2026-01-07 20:45:24.318  INFO 1 --- [           main] o.s.aop.framework.CglibAopProxy          : Unable to proxy interface-implementing method [public final void org.springframework.scheduling.quartz.QuartzJobBean.execute(org.quartz.JobExecutionContext) throws org.quartz.JobExecutionException] because it is marked as final: Consider using interface-based JDK proxies instead!
-atlas-cmms-backend   | 2026-01-07 20:47:40.177  WARN 1 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'storageServiceFactory' defined in URL [jar:file:/app/my-spring-boot-app.jar!/BOOT-INF/classes!/com/grash/factory/StorageServiceFactory.class]: Unsatisfied dependency expressed through constructor parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'minioService': Invocation of init method failed; nested exception is com.grash.exception.CustomException: Error configuring MinIO: Failed to connect to /192.168.1.75:9000
-atlas-cmms-backend   | 2026-01-07 20:47:40.179  INFO 1 --- [           main] o.s.s.quartz.SchedulerFactoryBean        : Shutting down Quartz Scheduler
-atlas-cmms-backend   | 2026-01-07 20:47:40.179  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
-atlas-cmms-backend   | 2026-01-07 20:47:40.179  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
-atlas-cmms-backend   | 2026-01-07 20:47:40.179  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
-atlas-cmms-backend   | 2026-01-07 20:47:40.217  INFO 1 --- [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-atlas-cmms-backend   | 2026-01-07 20:47:40.220  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-atlas-cmms-backend   | 2026-01-07 20:47:40.235  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-atlas-cmms-backend   | 2026-01-07 20:47:40.251  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
-atlas-cmms-backend   | 2026-01-07 20:47:40.291  INFO 1 --- [           main] ConditionEvaluationReportLoggingListener : 
+atlas-cmms-backend   | 2026-01-07 21:12:51.602  WARN 1 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'storageServiceFactory' defined in URL [jar:file:/app/my-spring-boot-app.jar!/BOOT-INF/classes!/com/grash/factory/StorageServiceFactory.class]: Unsatisfied dependency expressed through constructor parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'minioService': Invocation of init method failed; nested exception is com.grash.exception.CustomException: Error configuring MinIO: Failed to connect to /192.168.1.75:9000
+atlas-cmms-backend   | 2026-01-07 21:12:51.604  INFO 1 --- [           main] o.s.s.quartz.SchedulerFactoryBean        : Shutting down Quartz Scheduler
+atlas-cmms-backend   | 2026-01-07 21:12:51.604  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
+atlas-cmms-backend   | 2026-01-07 21:12:51.606  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+atlas-cmms-backend   | 2026-01-07 21:12:51.607  INFO 1 --- [           main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
+atlas-cmms-backend   | 2026-01-07 21:12:51.639  INFO 1 --- [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+atlas-cmms-backend   | 2026-01-07 21:12:51.643  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+atlas-cmms-backend   | 2026-01-07 21:12:51.654  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+atlas-cmms-backend   | 2026-01-07 21:12:51.657  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+atlas-cmms-backend   | 2026-01-07 21:12:51.726  INFO 1 --- [           main] ConditionEvaluationReportLoggingListener : 
 atlas-cmms-backend   | 
 atlas-cmms-backend   | Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-atlas-cmms-backend   | 2026-01-07 20:47:40.383 ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
+atlas-cmms-backend   | 2026-01-07 21:12:51.785 ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
 atlas-cmms-backend   | 
 atlas-cmms-backend   | org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'storageServiceFactory' defined in URL [jar:file:/app/my-spring-boot-app.jar!/BOOT-INF/classes!/com/grash/factory/StorageServiceFactory.class]: Unsatisfied dependency expressed through constructor parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'minioService': Invocation of init method failed; nested exception is com.grash.exception.CustomException: Error configuring MinIO: Failed to connect to /192.168.1.75:9000
 atlas-cmms-backend   |  at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[spring-beans-5.3.19.jar!/:5.3.19]
