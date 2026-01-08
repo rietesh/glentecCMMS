@@ -29,7 +29,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +60,6 @@ public class UserService {
     private final SubscriptionService subscriptionService;
     private final UserMapper userMapper;
     private final BrandingService brandingService;
-    private final DemoDataService demoDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${api.host}")
@@ -301,21 +299,25 @@ public class UserService {
     }
 
     public void invite(String email, Role role, OwnUser inviter) {
-        throwIfEmailNotificationsNotEnabled();
         if (!userRepository.existsByEmailIgnoreCase(email) && Helper.isValidEmailAddress(email)) {
             userInvitationService.create(new UserInvitation(email, role));
-            Map<String, Object> variables = new HashMap<String, Object>() {
-                {
-                    put("joinLink", frontendUrl + "/account/register?" + "email=" + email + "&role=" + role.getId());
-                    put("featuresLink", frontendUrl + "/#key-features");
-                    put("inviter", inviter.getFirstName() + " " + inviter.getLastName());
-                    put("company", inviter.getCompany().getName());
-                }
-            };
-            emailService2.sendMessageUsingThymeleafTemplate(new String[] { email }, messageSource.getMessage(
-                    "invitation_to_use", new String[] { brandingService.getBrandConfig().getName() },
-                    Helper.getLocale(inviter)), variables, "invite.html",
-                    Helper.getLocale(inviter));
+
+            // Only send email if email notifications are enabled
+            if (enableMails) {
+                Map<String, Object> variables = new HashMap<String, Object>() {
+                    {
+                        put("joinLink",
+                                frontendUrl + "/account/register?" + "email=" + email + "&role=" + role.getId());
+                        put("featuresLink", frontendUrl + "/#key-features");
+                        put("inviter", inviter.getFirstName() + " " + inviter.getLastName());
+                        put("company", inviter.getCompany().getName());
+                    }
+                };
+                emailService2.sendMessageUsingThymeleafTemplate(new String[] { email }, messageSource.getMessage(
+                        "invitation_to_use", new String[] { brandingService.getBrandConfig().getName() },
+                        Helper.getLocale(inviter)), variables, "invite.html",
+                        Helper.getLocale(inviter));
+            }
         } else
             throw new CustomException("Email already in use", HttpStatus.NOT_ACCEPTABLE);
     }
