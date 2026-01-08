@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.*;
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -80,12 +79,12 @@ public class UserService {
     @Value("${allowed-organization-admins}")
     private String[] allowedOrganizationAdmins;
 
-
     public String signin(String email, String password, String type) {
         try {
-            Authentication authentication =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_" + type.toUpperCase()))) {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            if (authentication.getAuthorities().stream().noneMatch(
+                    grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_" + type.toUpperCase()))) {
                 throw new CustomException("Invalid credentials", HttpStatus.FORBIDDEN);
             }
             Optional<OwnUser> optionalUser = userRepository.findByEmailIgnoreCase(email);
@@ -105,7 +104,7 @@ public class UserService {
     }
 
     private SignupSuccessResponse<OwnUser> enableAndReturnToken(OwnUser user, boolean sendEmailToSuperAdmins,
-                                                                UserSignupRequest userSignupRequest) {
+            UserSignupRequest userSignupRequest) {
         user.setEnabled(true);
         userRepository.save(user);
         if (sendEmailToSuperAdmins)
@@ -122,19 +121,20 @@ public class UserService {
             throw new CustomException("Email is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
 
         }
-        if (allowedOrganizationAdmins != null && userReq.getRole() == null && allowedOrganizationAdmins.length != 0 && Arrays.stream(allowedOrganizationAdmins).noneMatch(allowedOrganizationAdmin -> allowedOrganizationAdmin.equalsIgnoreCase(userReq.getEmail()))) {
+        if (allowedOrganizationAdmins != null && userReq.getRole() == null && allowedOrganizationAdmins.length != 0
+                && Arrays.stream(allowedOrganizationAdmins).noneMatch(
+                        allowedOrganizationAdmin -> allowedOrganizationAdmin.equalsIgnoreCase(userReq.getEmail()))) {
             throw new CustomException("You are not allowed to create an account without being invited",
                     HttpStatus.NOT_ACCEPTABLE);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUsername(utils.generateStringId());
         if (user.getRole() == null) {
-            //create company with default roles
-            Subscription subscription =
-                    Subscription.builder().usersCount(cloudVersion ? 10 : 100).monthly(cloudVersion)
-                            .startsOn(new Date())
-                            .endsOn(cloudVersion ? Helper.incrementDays(new Date(), 15) : null)
-                            .subscriptionPlan(subscriptionPlanService.findByCode("BUSINESS").get()).build();
+            // create company with default roles
+            Subscription subscription = Subscription.builder().usersCount(cloudVersion ? 10 : 100).monthly(cloudVersion)
+                    .startsOn(new Date())
+                    .endsOn(cloudVersion ? Helper.incrementDays(new Date(), 15) : null)
+                    .subscriptionPlan(subscriptionPlanService.findByCode("BUSINESS").get()).build();
             subscriptionService.create(subscription);
             Company company = new Company(userReq.getCompanyName(), userReq.getEmployeesCount(), subscription);
             company.setDemo(Boolean.TRUE.equals(userReq.getDemo()));
@@ -150,8 +150,8 @@ public class UserService {
             Optional<Role> optionalRole = roleService.findById(user.getRole().getId());
             if (!optionalRole.isPresent())
                 throw new CustomException("Role not found", HttpStatus.NOT_ACCEPTABLE);
-            List<UserInvitation> userInvitations =
-                    userInvitationService.findByRoleAndEmail(optionalRole.get().getId(), user.getEmail());
+            List<UserInvitation> userInvitations = userInvitationService.findByRoleAndEmail(optionalRole.get().getId(),
+                    user.getEmail());
             if (enableInvitationViaEmail && userInvitations.isEmpty()) {
                 throw new CustomException("You are not invited to this organization for this role",
                         HttpStatus.NOT_ACCEPTABLE);
@@ -159,29 +159,37 @@ public class UserService {
             userInvitations.sort(Comparator.comparing(UserInvitation::getCreatedAt).reversed());
             user.setRole(optionalRole.get());
             if (optionalRole.get().getCompanySettings() == null) {
+                if (userInvitations.isEmpty()) {
+                    throw new CustomException(
+                            "No invitation found for this role. Please contact your organization administrator.",
+                            HttpStatus.NOT_ACCEPTABLE);
+                }
                 Optional<OwnUser> optionalInviter = findById(userInvitations.get(0).getCreatedBy());
                 if (!optionalInviter.isPresent())
                     throw new CustomException("Inviter not found", HttpStatus.NOT_ACCEPTABLE);
                 user.setCompany(optionalInviter.get().getCompany());
-            } else user.setCompany(optionalRole.get().getCompanySettings().getCompany());
+            } else
+                user.setCompany(optionalRole.get().getCompanySettings().getCompany());
             return enableAndReturnToken(user, true, userReq);
         }
         if (Helper.isLocalhost(PUBLIC_API_URL)) {
             return enableAndReturnToken(user, false, userReq);
         } else {
-            if (userReq.getRole() == null) { //send mail
+            if (userReq.getRole() == null) { // send mail
                 if (enableInvitationViaEmail) {
                     throwIfEmailNotificationsNotEnabled();
                     String token = UUID.randomUUID().toString();
                     String link = PUBLIC_API_URL + "/auth/activate-account?token=" + token;
-                    Map<String, Object> variables = new HashMap<String, Object>() {{
-                        put("verifyTokenLink", link);
-                        put("featuresLink", frontendUrl + "/#key-features");
-                    }};
+                    Map<String, Object> variables = new HashMap<String, Object>() {
+                        {
+                            put("verifyTokenLink", link);
+                            put("featuresLink", frontendUrl + "/#key-features");
+                        }
+                    };
                     user = userRepository.save(user);
                     VerificationToken newUserToken = new VerificationToken(token, user, null);
                     verificationTokenRepository.save(newUserToken);
-                    emailService2.sendMessageUsingThymeleafTemplate(new String[]{user.getEmail()},
+                    emailService2.sendMessageUsingThymeleafTemplate(new String[] { user.getEmail() },
                             messageSource.getMessage("confirmation_email", null, Helper.getLocale(user)), variables,
                             "signup.html", Helper.getLocale(user));
                 } else {
@@ -216,7 +224,8 @@ public class UserService {
     }
 
     public OwnUser whoami(HttpServletRequest req) {
-        return userRepository.findByEmailIgnoreCase(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req))).get();
+        return userRepository.findByEmailIgnoreCase(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)))
+                .get();
     }
 
     public String refresh(String username) {
@@ -239,8 +248,8 @@ public class UserService {
     public void enableUser(String email) {
         OwnUser user = userRepository.findByEmailIgnoreCase(email).get();
         if (user.getRole().isPaid()) {
-            int companyUsersCount =
-                    (int) findByCompany(user.getCompany().getId()).stream().filter(user1 -> user1.isEnabled() && user1.isEnabledInSubscriptionAndPaid()).count();
+            int companyUsersCount = (int) findByCompany(user.getCompany().getId()).stream()
+                    .filter(user1 -> user1.isEnabled() && user1.isEnabledInSubscriptionAndPaid()).count();
             if (companyUsersCount + 1 > user.getCompany().getSubscription().getUsersCount())
                 throw new CustomException("You can't add more users to this company", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -256,15 +265,19 @@ public class UserService {
         String password = helper.generateString().replace("-", "").substring(0, 8).toUpperCase();
 
         String token = UUID.randomUUID().toString();
-        Map<String, Object> variables = new HashMap<String, Object>() {{
-            put("featuresLink", frontendUrl + "/#key-features");
-            put("resetConfirmLink", PUBLIC_API_URL + "/auth/reset-pwd-confirm?token=" + token);
-            put("password", password);
-        }};
+        Map<String, Object> variables = new HashMap<String, Object>() {
+            {
+                put("featuresLink", frontendUrl + "/#key-features");
+                put("resetConfirmLink", PUBLIC_API_URL + "/auth/reset-pwd-confirm?token=" + token);
+                put("password", password);
+            }
+        };
         VerificationToken newUserToken = new VerificationToken(token, user, password);
         verificationTokenRepository.save(newUserToken);
-        emailService2.sendMessageUsingThymeleafTemplate(new String[]{email}, messageSource.getMessage("password_reset"
-                        , new String[]{brandingService.getBrandConfig().getName()}, Helper.getLocale(user)), variables,
+        emailService2.sendMessageUsingThymeleafTemplate(new String[] { email },
+                messageSource.getMessage("password_reset", new String[] { brandingService.getBrandConfig().getName() },
+                        Helper.getLocale(user)),
+                variables,
                 "reset-password.html", Helper.getLocale(user));
         return new SuccessResponse(true, "Password changed successfully");
     }
@@ -291,17 +304,20 @@ public class UserService {
         throwIfEmailNotificationsNotEnabled();
         if (!userRepository.existsByEmailIgnoreCase(email) && Helper.isValidEmailAddress(email)) {
             userInvitationService.create(new UserInvitation(email, role));
-            Map<String, Object> variables = new HashMap<String, Object>() {{
-                put("joinLink", frontendUrl + "/account/register?" + "email=" + email + "&role=" + role.getId());
-                put("featuresLink", frontendUrl + "/#key-features");
-                put("inviter", inviter.getFirstName() + " " + inviter.getLastName());
-                put("company", inviter.getCompany().getName());
-            }};
-            emailService2.sendMessageUsingThymeleafTemplate(new String[]{email}, messageSource.getMessage(
-                            "invitation_to_use", new String[]{brandingService.getBrandConfig().getName()},
-                            Helper.getLocale(inviter)), variables, "invite.html",
+            Map<String, Object> variables = new HashMap<String, Object>() {
+                {
+                    put("joinLink", frontendUrl + "/account/register?" + "email=" + email + "&role=" + role.getId());
+                    put("featuresLink", frontendUrl + "/#key-features");
+                    put("inviter", inviter.getFirstName() + " " + inviter.getLastName());
+                    put("company", inviter.getCompany().getName());
+                }
+            };
+            emailService2.sendMessageUsingThymeleafTemplate(new String[] { email }, messageSource.getMessage(
+                    "invitation_to_use", new String[] { brandingService.getBrandConfig().getName() },
+                    Helper.getLocale(inviter)), variables, "invite.html",
                     Helper.getLocale(inviter));
-        } else throw new CustomException("Email already in use", HttpStatus.NOT_ACCEPTABLE);
+        } else
+            throw new CustomException("Email already in use", HttpStatus.NOT_ACCEPTABLE);
     }
 
     @org.springframework.transaction.annotation.Transactional
@@ -319,7 +335,8 @@ public class UserService {
             OwnUser updatedUser = userRepository.saveAndFlush(userMapper.updateUser(savedUser, userReq));
             em.refresh(updatedUser);
             return updatedUser;
-        } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+        } else
+            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
     }
 
     public OwnUser save(OwnUser user) {
@@ -337,13 +354,13 @@ public class UserService {
     public boolean isUserInCompany(OwnUser user, long companyId, boolean optional) {
         if (optional) {
             Optional<OwnUser> optionalUser = user == null ? Optional.empty() : findById(user.getId());
-            return user == null || (optionalUser.isPresent() && optionalUser.get().getCompany().getId().equals(companyId));
+            return user == null
+                    || (optionalUser.isPresent() && optionalUser.get().getCompany().getId().equals(companyId));
         } else {
             Optional<OwnUser> optionalUser = findById(user.getId());
             return optionalUser.isPresent() && optionalUser.get().getCompany().getId().equals(companyId);
         }
     }
-
 
     public Page<OwnUser> findBySearchCriteria(SearchCriteria searchCriteria) {
         SpecificationBuilder<OwnUser> builder = new SpecificationBuilder<>();
@@ -355,11 +372,14 @@ public class UserService {
 
     @Async
     void sendRegistrationMailToSuperAdmins(OwnUser user, UserSignupRequest userSignupRequest) {
-        if (user.getEmail().equals("superadmin@test.com")) return;
-        if (user.getCompany() != null && user.getCompany().isDemo()) return;
+        if (user.getEmail().equals("superadmin@test.com"))
+            return;
+        if (user.getCompany() != null && user.getCompany().isDemo())
+            return;
         if (recipients == null || recipients.length == 0) {
             return;
-//            throw new CustomException("MAIL_RECIPIENTS env variable not set", HttpStatus.INTERNAL_SERVER_ERROR);
+            // throw new CustomException("MAIL_RECIPIENTS env variable not set",
+            // HttpStatus.INTERNAL_SERVER_ERROR);
         }
         try {
             String subject = buildRegistrationEmailSubject(userSignupRequest, brandingService);
@@ -409,7 +429,8 @@ public class UserService {
     }
 
     private void appendUtmParameters(StringBuilder body, UserSignupRequest request) {
-        if (!cloudVersion || request.getUtmParams() == null || !request.getUtmParams().hasAnyParam()) return;
+        if (!cloudVersion || request.getUtmParams() == null || !request.getUtmParams().hasAnyParam())
+            return;
         body.append("\n--- Marketing Attribution ---\n");
         if (request.getUtmParams().getReferrer() != null) {
             body.append(String.format("Referrer: %s%n", request.getUtmParams().getReferrer()));
