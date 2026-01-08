@@ -7,7 +7,6 @@ import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
-import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,18 +40,14 @@ public class MinioService implements StorageService {
 
     @PostConstruct
     private void init() {
-        if (minioEndpoint.isEmpty() || minioBucket.isEmpty() || minioAccessKey.isEmpty() || minioSecretKey.isEmpty() || minioPublicEndpoint.isEmpty()) {
+        if (minioEndpoint.isEmpty() || minioBucket.isEmpty() || minioAccessKey.isEmpty() || minioSecretKey.isEmpty()
+                || minioPublicEndpoint.isEmpty()) {
             return;
         }
         try {
-            URI minioEndpointURI = new URI(minioEndpoint);
             MinioClient.Builder minioClientBuilder = MinioClient.builder()
-                    .endpoint(minioPublicEndpoint)
+                    .endpoint(minioEndpoint)
                     .credentials(minioAccessKey, minioSecretKey);
-            if (Helper.isLocalhost(minioPublicEndpoint)) minioClientBuilder.httpClient(
-                    new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP,
-                            new InetSocketAddress(minioEndpointURI.getHost(), minioEndpointURI.getPort()))).build()
-            );
             minioClient = minioClientBuilder.build();
             // Check if the bucket exists, create if it doesn't
             boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioBucket).build());
@@ -62,8 +57,6 @@ public class MinioService implements StorageService {
             configured = true;
         } catch (MinioException | IOException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new CustomException("Error configuring MinIO: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -78,8 +71,7 @@ public class MinioService implements StorageService {
                             .object(filePath)
                             .stream(file.getInputStream(), file.getSize(), -1)
                             .contentType(file.getContentType())
-                            .build()
-            );
+                            .build());
 
             return filePath;
         } catch (MinioException | IOException | InvalidKeyException | NoSuchAlgorithmException e) {
@@ -99,8 +91,7 @@ public class MinioService implements StorageService {
                             .bucket(minioBucket)
                             .object(filePath)
                             .expiry(Math.toIntExact(expirationMinutes), TimeUnit.MINUTES)
-                            .build()
-            );
+                            .build());
             return url;
         } catch (Exception exception) {
             throw new RuntimeException(exception);
@@ -116,8 +107,7 @@ public class MinioService implements StorageService {
                     GetObjectArgs.builder()
                             .bucket(minioBucket)
                             .object(filePath)
-                            .build()
-            );
+                            .build());
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
