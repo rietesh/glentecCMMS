@@ -3,3 +3,4 @@
  32 | 2026-01-08 10:00:42.565 | 2026-01-08 10:00:42.565 |            |            | superadmin@test.com |      31
 (1 row)
 
+{"email":"test@glentec.com","firstName":"test","lastName":"t","countryCode":{"code":"AF","label":"Afghanistan","phone":"93"},"phone":"+939986723645","password":"test@123","terms":true,"submit":null,"language":"EN","role":{"id":44},"utmParams":{"utm_source":null,"utm_medium":null,"utm_campaign":null,"utm_term":null,"utm_content":null,"gclid":null,"fbclid":null,"referrer":null}}
