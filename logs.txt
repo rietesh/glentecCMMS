@@ -1,7 +1,5 @@
-atlas-cmms-backend   | java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
-atlas-cmms-backend   |  at java.util.ArrayList.rangeCheck(ArrayList.java:659)
-atlas-cmms-backend   |  at java.util.ArrayList.get(ArrayList.java:435)
-atlas-cmms-backend   |  at com.grash.service.UserService.signup(UserService.java:162)
+atlas-cmms-backend   | com.grash.exception.CustomException: No invitation found for this role. Please contact your organization administrator.
+atlas-cmms-backend   |  at com.grash.service.UserService.signup(UserService.java:163)
 atlas-cmms-backend   |  at com.grash.service.UserService$$FastClassBySpringCGLIB$$1e58cba1.invoke(<generated>)
 atlas-cmms-backend   |  at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 atlas-cmms-backend   |  at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:793)
@@ -13,7 +11,7 @@ atlas-cmms-backend   |  at org.springframework.transaction.interceptor.Transacti
 atlas-cmms-backend   |  at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
 atlas-cmms-backend   |  at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)
 atlas-cmms-backend   |  at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708)
-atlas-cmms-backend   |  at com.grash.service.UserService$$EnhancerBySpringCGLIB$$c063484a.signup(<generated>)
+atlas-cmms-backend   |  at com.grash.service.UserService$$EnhancerBySpringCGLIB$$7a08b055.signup(<generated>)
 atlas-cmms-backend   |  at com.grash.controller.AuthController.signup(AuthController.java:78)
 atlas-cmms-backend   |  at com.grash.controller.AuthController$$FastClassBySpringCGLIB$$d09cd926.invoke(<generated>)
 atlas-cmms-backend   |  at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
@@ -27,7 +25,7 @@ atlas-cmms-backend   |  at org.springframework.aop.interceptor.ExposeInvocationI
 atlas-cmms-backend   |  at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
 atlas-cmms-backend   |  at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)
 atlas-cmms-backend   |  at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708)
-atlas-cmms-backend   |  at com.grash.controller.AuthController$$EnhancerBySpringCGLIB$$3e696552.signup(<generated>)
+atlas-cmms-backend   |  at com.grash.controller.AuthController$$EnhancerBySpringCGLIB$$a26d5337.signup(<generated>)
 atlas-cmms-backend   |  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 atlas-cmms-backend   |  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 atlas-cmms-backend   |  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
