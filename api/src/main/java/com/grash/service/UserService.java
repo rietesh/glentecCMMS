@@ -148,26 +148,15 @@ public class UserService {
             Optional<Role> optionalRole = roleService.findById(user.getRole().getId());
             if (!optionalRole.isPresent())
                 throw new CustomException("Role not found", HttpStatus.NOT_ACCEPTABLE);
-            List<UserInvitation> userInvitations = userInvitationService.findByRoleAndEmail(optionalRole.get().getId(),
-                    user.getEmail());
-            if (enableInvitationViaEmail && userInvitations.isEmpty()) {
-                throw new CustomException("You are not invited to this organization for this role",
-                        HttpStatus.NOT_ACCEPTABLE);
-            }
-            userInvitations.sort(Comparator.comparing(UserInvitation::getCreatedAt).reversed());
+
             user.setRole(optionalRole.get());
+
+            // Set company from role's company settings
             if (optionalRole.get().getCompanySettings() == null) {
-                if (userInvitations.isEmpty()) {
-                    throw new CustomException(
-                            "No invitation found for this role. Please contact your organization administrator.",
-                            HttpStatus.NOT_ACCEPTABLE);
-                }
-                Optional<OwnUser> optionalInviter = findById(userInvitations.get(0).getCreatedBy());
-                if (!optionalInviter.isPresent())
-                    throw new CustomException("Inviter not found", HttpStatus.NOT_ACCEPTABLE);
-                user.setCompany(optionalInviter.get().getCompany());
-            } else
-                user.setCompany(optionalRole.get().getCompanySettings().getCompany());
+                throw new CustomException("Role is not associated with any company", HttpStatus.NOT_ACCEPTABLE);
+            }
+            user.setCompany(optionalRole.get().getCompanySettings().getCompany());
+
             return enableAndReturnToken(user, true, userReq);
         }
         if (Helper.isLocalhost(PUBLIC_API_URL)) {
